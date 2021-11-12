@@ -98,6 +98,27 @@ namespace ChuckNorrisAPI
             return null;
         }
 
+        public async static Task<Joke> GetJokeByCategory(string cat)
+        {
+            HttpResponseMessage response = await client.GetAsync($"jokes/random?limitTo=[{cat}]");
+
+            if (response.IsSuccessStatusCode)
+            {
+                string result = await response.Content.ReadAsStringAsync();
+                
+                var data = JsonConvert.DeserializeObject<SingleJokeResponse>(result);
+                var joke = data.JokeData;
+                joke.JokeText = WebUtility.HtmlDecode(joke.JokeText);
+
+                 return data.JokeData;
+                
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public async static Task<IEnumerable<string>> GetCategories()
         {
             HttpResponseMessage response = await client.GetAsync($"categories");
